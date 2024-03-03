@@ -1,5 +1,6 @@
 import os
 import discord
+import log_cog
 from discord.ext import commands
 from dotenv import load_dotenv
 
@@ -14,17 +15,17 @@ bot = commands.Bot(command_prefix=COMMAND_PREFIX, intents=intents)
 
 
 # Load cogs function
+# Load cogs function
 async def load_cogs(bot):
-    cogs = []  # Add cogs to be loaded here
+    cogs = [log_cog]
     for cog in cogs:
         if not bot.get_cog(cog.__name__):
             try:
-                await bot.load_extention(cog.__name__)
+                await bot.load_extension(cog.__name__)
                 print(f"Cog {cog.__name__} loaded!")
             except Exception as e:
-                print(f"Failed to load cog {cog.__name__}: {e:}")
+                print(f"Failed to load cog {cog.__name__}: {e}")
     print("Cogs loaded!")
-
 
 # Bot ready event
 @bot.event
