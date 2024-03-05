@@ -1,6 +1,7 @@
 import os
 import discord
 import log_cog
+import moderation
 from discord.ext import commands
 from dotenv import load_dotenv
 
@@ -17,7 +18,7 @@ bot = commands.Bot(command_prefix=COMMAND_PREFIX, intents=intents)
 # Load cogs function
 # Load cogs function
 async def load_cogs(bot):
-    cogs = [log_cog]
+    cogs = [log_cog, moderation]
     for cog in cogs:
         if not bot.get_cog(cog.__name__):
             try:

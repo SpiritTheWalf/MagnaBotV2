@@ -233,5 +233,23 @@ class LoggingCog(commands.Cog):  # Defines our LoggingCog
 
         await channel.send(embed=embed)
 
+    @commands.Cog.listener()  # Listens for deleted messages and fires the embed when one is detected
+    async def on_message_delete(self, message):
+        guild = message.guild
+
+        default_channel_id = self.load_default_logging_channel(guild.id)
+        if not default_channel_id:
+            return
+
+        default_channel = guild.get_channel(default_channel_id)
+        if not default_channel:
+            return
+
+        # Check if the message is not from the bot itself
+        if message.author != self.bot.user:
+            # Send message deleted embed to default logging channel
+            await self.send_message_deleted_embed(default_channel, message)
+
+
 async def setup(bot: commands.Bot):
     await bot.add_cog(LoggingCog(bot))
