@@ -143,10 +143,14 @@ class LoggingCog(commands.Cog):  # Defines our LoggingCog
 
     @commands.Cog.listener()  # Listens for a reaction added to a message
     async def on_raw_reaction_add(self, payload):
+        if before.author.bot:
+            return
         await self.log_reaction_event(payload, "added")
 
     @commands.Cog.listener()  # Listens for a reaction removed from a message
     async def on_raw_reaction_remove(self, payload):
+        if before.author.bot:
+            return
         await self.log_reaction_event(payload, "removed")
 
     async def log_reaction_event(self, payload, action):
@@ -194,6 +198,8 @@ class LoggingCog(commands.Cog):  # Defines our LoggingCog
 
     @commands.Cog.listener()  # Listens for a member joining or leaving a voice channel
     async def on_voice_state_update(self, member, before, after):
+        if before.author.bot:
+            return
         guild = member.guild
 
         # Check if the user joined or left a voice channel
@@ -240,6 +246,8 @@ class LoggingCog(commands.Cog):  # Defines our LoggingCog
 
     @commands.Cog.listener()  # Listens for deleted messages and fires the embed when one is detected
     async def on_message_delete(self, message):
+        if before.author.bot:
+            return
         guild = message.guild
 
         default_channel_id = self.load_default_logging_channel(guild.id)
