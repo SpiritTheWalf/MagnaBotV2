@@ -14,13 +14,12 @@ class ModerationCog(commands.Cog):
     def get_connection(self):  # Connect to the database
         return sqlite3.connect(DATABASE_FILE)
 
-    async def get_default_logging_channel(self,
-                                          guild_id):  # Gets the default logging channel ID and saves it to the
-        # variable default_channel_id
+    async def get_default_logging_channel(self, guild_id):
         try:
             conn = sqlite3.connect(DATABASE_FILE)
             cursor = conn.cursor()
-            cursor.execute(f"SELECT default_logging_channel FROM guilds {guild_id}: {default_channel_id}")
+            cursor.execute(f"SELECT default_logging_channel FROM guilds WHERE guild_id = ?", (guild_id,))
+            result = cursor.fetchone()
             default_channel_id = result[0] if result else None
             print(f"Default logging channel for guild {guild_id}: {default_channel_id}")
             return default_channel_id
@@ -30,7 +29,7 @@ class ModerationCog(commands.Cog):
             if conn:
                 conn.close()
 
-    async def send_warning_embeds(self, channel, guild, issuer,
+    async def send_warning_embeds(self, channel, guild, issuer, user,
                                   reason):  # This is the embed format for the /warn command
         warning_embed = discord.Embed(title="User Warned", color=discord.Color.orange())
         warning_embed.add_field(name="User", value=user.display_name, inline=False)
@@ -41,6 +40,15 @@ class ModerationCog(commands.Cog):
                                 inline=False)
 
         await channel.send(embed=warning_embed)
+
+    async def send_kick_logging_embed(self, channel, guild, user, issuer, reason):
+        embed = discord.Embed(title="User Kicked", color=DEFAULT_EMBED_COLOR)
+        embed.add_field(name="User", value=user.mention)
+        embed.add_field(name="Issuer", value=issuer.mention)
+        embed.add_field(name="Reason", value=reason)
+        embed.set_footer(text=f"Guild: {guild.name} | Time: {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')}")
+
+        await channel.send(embed=embed)
 
     @app_commands.command(name="warn", description="Warn a user for violating rules")
     async def warn_command(self, inter: discord.Interaction, user: discord.Member, reason: str):
@@ -132,7 +140,7 @@ class ModerationCog(commands.Cog):
 
         # Send kick embed to default logging channel
         try:
-            await self.send_logging_embed(default_channel, guild, user, issuer, reason)
+            await self.send_kick_logging_embed(default_channel, guild, user, issuer, reason)
             await inter.response.send_message(f"{user.mention} has been kicked from the server for: {reason}",
                                               ephemeral=True)
         except Exception as e:

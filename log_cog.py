@@ -2,7 +2,7 @@ import sqlite3
 import discord
 from discord import app_commands
 from discord.ext import commands
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 
 DATABASE_FILE = "logging_cog.db"
 
@@ -83,15 +83,18 @@ class LoggingCog(commands.Cog):  # Defines our LoggingCog
         guild = member.guild
         await self.send_join_leave_logging_embed(guild, "joined", member)
 
-    @commands.Cog.listener()  # Listens for a member leaving the server, then fires the send_join_leave_logging_embed
-    # function
+    @commands.Cog.listener()
     async def on_member_remove(self, member):
         guild = member.guild
-        # Check if the member is no longer in the guild due to being kicked
-        if member not in guild.members:
-            await self.send_join_leave_logging_embed(guild, "kicked", member)
-        else:
-            await self.send_join_leave_logging_embed(guild, "left", member)
+        cutoff_time = datetime.utcnow().replace(tzinfo=timezone.utc) - timedelta(
+            seconds=30)  # Adjust the time frame as needed
+
+        async for entry in guild.audit_logs(action=discord.AuditLogAction.kick):
+            if entry.target == member and entry.created_at > cutoff_time:
+                await self.send_join_leave_logging_embed(guild, "kicked", member)
+                return
+
+        await self.send_join_leave_logging_embed(guild, "left", member)
 
     async def send_message_edit_logging_embed(self, before, after):  # Sends an embed whenever a message is edited
         channel_id = self.load_default_logging_channel(after.guild.id)
@@ -112,6 +115,8 @@ class LoggingCog(commands.Cog):  # Defines our LoggingCog
 
     @commands.Cog.listener()  # Listens for an edited message, then fires the send_message_edit_logging_embed function
     async def on_message_edit(self, before, after):
+        if before.author.bot:
+            return
         await self.send_message_edit_logging_embed(before, after)
 
     async def send_reaction_logging_embed(self, guild, action, target, user):  # Sends an embed to the default
