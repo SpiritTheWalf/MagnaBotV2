@@ -42,7 +42,7 @@ class ModerationCog(commands.Cog):
         await channel.send(embed=warning_embed)
 
     async def send_kick_logging_embed(self, channel, guild, user, issuer, reason):
-        embed = discord.Embed(title="User Kicked", color=DEFAULT_EMBED_COLOR)
+        embed = discord.Embed(title="User Kicked", color=discord.Color.red())
         embed.add_field(name="User", value=user.mention)
         embed.add_field(name="Issuer", value=issuer.mention)
         embed.add_field(name="Reason", value=reason)
