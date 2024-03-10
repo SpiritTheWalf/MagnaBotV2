@@ -194,7 +194,7 @@ class LoggingCog(commands.Cog):
                 # Check if the user joined a voice channel
                 if before.channel is None and after.channel is not None:
                     embed.title = "Voice Channel Joined"
-                    embed.add_field(name="Channel", value=after.channel.name, inline=False)
+                    embed.add_field(name="Channel", value=after.channel.mention, inline=False)
                     embed.add_field(name="Timestamp", value=datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC"),
                                     inline=False)
                     await default_channel.send(embed=embed)
@@ -202,7 +202,7 @@ class LoggingCog(commands.Cog):
                 # Check if the user left a voice channel
                 elif before.channel is not None and after.channel is None:
                     embed.title = "Voice Channel Left"
-                    embed.add_field(name="Channel", value=before.channel.name, inline=False)
+                    embed.add_field(name="Channel", value=before.channel.mention, inline=False)
                     embed.add_field(name="Timestamp", value=datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC"),
                                     inline=False)
                     await default_channel.send(embed=embed)
