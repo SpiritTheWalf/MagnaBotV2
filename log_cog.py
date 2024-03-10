@@ -6,6 +6,7 @@ from datetime import datetime, timedelta, timezone
 
 DATABASE_FILE = "logging_cog.db"
 
+
 class LoggingCog(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
@@ -74,8 +75,10 @@ class LoggingCog(commands.Cog):
                             break
                     invite_link = f"Used Invite: {invite_used.url}" if invite_used else "Unknown"
                     embed.add_field(name="Join Link", value=invite_link, inline=False)
-                    embed.add_field(name="Account Creation Date", value=member.created_at.strftime("%Y-%m-%d %H:%M:%S UTC"), inline=False)
-                    embed.add_field(name="Timestamp", value=datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC"), inline=False)
+                    embed.add_field(name="Account Creation Date",
+                                    value=member.created_at.strftime("%Y-%m-%d %H:%M:%S UTC"), inline=False)
+                    embed.add_field(name="Timestamp", value=datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC"),
+                                    inline=False)
                 if reason:
                     embed.add_field(name="Reason", value=reason.capitalize(), inline=False)
                 await channel.send(embed=embed)
@@ -96,7 +99,8 @@ class LoggingCog(commands.Cog):
                 embed.add_field(name="After", value=after.content, inline=False)
                 embed.add_field(name="Author", value=before.author.mention, inline=False)
                 embed.add_field(name="Channel", value=before.channel.mention, inline=False)
-                embed.add_field(name="Timestamp", value=datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC"), inline=False)
+                embed.add_field(name="Timestamp", value=datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC"),
+                                inline=False)
                 await channel.send(embed=embed)
 
     @commands.Cog.listener()
@@ -125,6 +129,8 @@ class LoggingCog(commands.Cog):
             channel = guild.get_channel(payload.channel_id)
             if channel:
                 message = await channel.fetch_message(payload.message_id)
+                if message.author.bot:  # Check if the reacted message was sent by a bot
+                    return  # Ignore reactions to messages sent by bots
                 user = guild.get_member(payload.user_id)
                 emoji = payload.emoji
                 default_channel_id = self.load_default_logging_channel(guild.id)
@@ -139,7 +145,8 @@ class LoggingCog(commands.Cog):
                         embed.add_field(name="User", value=user.mention, inline=False)
                         embed.add_field(name="Message", value=message.content, inline=False)
                         embed.add_field(name="Channel", value=channel.mention, inline=False)
-                        embed.add_field(name="Timestamp", value=datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC"), inline=False)
+                        embed.add_field(name="Timestamp", value=datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC"),
+                                        inline=False)
                         await default_channel.send(embed=embed)
 
     @commands.Cog.listener()
@@ -149,6 +156,8 @@ class LoggingCog(commands.Cog):
             channel = guild.get_channel(payload.channel_id)
             if channel:
                 message = await channel.fetch_message(payload.message_id)
+                if message.author.bot:  # Check if the reacted message was sent by a bot
+                    return  # Ignore reactions to messages sent by bots
                 user = guild.get_member(payload.user_id)
                 emoji = payload.emoji
                 default_channel_id = self.load_default_logging_channel(guild.id)
@@ -163,7 +172,8 @@ class LoggingCog(commands.Cog):
                         embed.add_field(name="User", value=user.mention, inline=False)
                         embed.add_field(name="Message", value=message.content, inline=False)
                         embed.add_field(name="Channel", value=channel.mention, inline=False)
-                        embed.add_field(name="Timestamp", value=datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC"), inline=False)
+                        embed.add_field(name="Timestamp", value=datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC"),
+                                        inline=False)
                         await default_channel.send(embed=embed)
 
     @commands.Cog.listener()
@@ -174,17 +184,28 @@ class LoggingCog(commands.Cog):
             default_channel = guild.get_channel(default_channel_id)
             if default_channel:
                 embed = discord.Embed(
-                    title="Voice State Update",
                     color=discord.Color.blurple()
                 )
                 embed.add_field(name="User", value=member.mention, inline=False)
-                if before.channel != after.channel:
-                    if before.channel:
-                        embed.add_field(name="Left Voice Channel", value=before.channel.name, inline=False)
-                    if after.channel:
-                        embed.add_field(name="Joined Voice Channel", value=after.channel.name, inline=False)
-                embed.add_field(name="Timestamp", value=datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC"), inline=False)
-                await default_channel.send(embed=embed)
+
+                # Add user's display name and profile picture
+                embed.set_author(name=member.display_name, icon_url=member.avatar.url)
+
+                # Check if the user joined a voice channel
+                if before.channel is None and after.channel is not None:
+                    embed.title = "Voice Channel Joined"
+                    embed.add_field(name="Channel", value=after.channel.name, inline=False)
+                    embed.add_field(name="Timestamp", value=datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC"),
+                                    inline=False)
+                    await default_channel.send(embed=embed)
+
+                # Check if the user left a voice channel
+                elif before.channel is not None and after.channel is None:
+                    embed.title = "Voice Channel Left"
+                    embed.add_field(name="Channel", value=before.channel.name, inline=False)
+                    embed.add_field(name="Timestamp", value=datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC"),
+                                    inline=False)
+                    await default_channel.send(embed=embed)
 
     async def send_message_deleted_embed(self, channel, message):
         if not message.author:
