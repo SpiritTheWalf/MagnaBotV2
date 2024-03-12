@@ -90,9 +90,9 @@ class ModerationCog(commands.Cog):
 
             await user.send(embed=warning_embed)
         except discord.Forbidden:
-            await inter.response.send_message("Failed to DM the user. Make sure they have DMs enabled.")
+            await inter.response.send_message("Failed to DM the user. Make sure they have DMs enabled.", ephemeral=True)
 
-        await inter.response.send_message("User has been warned successfully.")
+        await inter.response.send_message("User has been warned successfully.", ephemeral=True)
 
     @app_commands.command(name="kick", description="Kick a user from the server")
     async def kick_command(self, inter: discord.Interaction, user: discord.Member, reason: str = "No reason provided"):
