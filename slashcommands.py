@@ -103,6 +103,14 @@ class SlashCog(commands.Cog):
     async def setup(self):
         pass  # Add initialization code if needed
 
+    @app_commands.command(name="echo", description="Repeats what the user says")
+    async def echo(self, inter: discord.Interaction, message: str):
+        """
+        Repeats what the user says.
+        """
+        await inter.response.send_message(message)
+
+
 async def setup(bot: commands.Bot):
     for cog in bot.cogs.values():
         if isinstance(cog, SlashCog):
