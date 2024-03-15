@@ -2,6 +2,7 @@ import os
 import discord
 import log_cog
 import moderation
+import sheri
 import slashcommands
 from discord.ext import commands
 from dotenv import load_dotenv
@@ -19,7 +20,7 @@ bot = commands.Bot(command_prefix=COMMAND_PREFIX, intents=intents)
 # Load cogs function
 # Load cogs function
 async def load_cogs(bot):
-    cogs = [log_cog, moderation, slashcommands]
+    cogs = [log_cog, moderation, slashcommands, sheri]
     for cog in cogs:
         if not bot.get_cog(cog.__name__):
             try:
