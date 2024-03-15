@@ -1,0 +1,19 @@
+`/help` command
+domain blacklisting
+tickets?
+levels?
+mass delete message command
+sheri api integration
+games
+messageroles
+`/setnick` command
+sticky messages
+starboard
+muterole
+`/echo`
+fix messages falsely sending edited logs in announcement channels
+HIGH PRIORITY - make the ?load command reload the cogs rather than than load them again
+HIGH PRIORITY - make a moderation logging system
+and a command to check warns for that user
+disable logging features command
+Make the bot send a message to the logging channel saying that channel has been set as thr logging channel
