@@ -123,60 +123,6 @@ class LoggingCog(commands.Cog):
         await self.send_join_leave_logging_embed(guild, "joined", member)
 
     @commands.Cog.listener()
-    async def on_raw_reaction_add(self, payload):
-        guild = self.bot.get_guild(payload.guild_id)
-        if guild:
-            channel = guild.get_channel(payload.channel_id)
-            if channel:
-                message = await channel.fetch_message(payload.message_id)
-                if message.author.bot:  # Check if the reacted message was sent by a bot
-                    return  # Ignore reactions to messages sent by bots
-                user = guild.get_member(payload.user_id)
-                emoji = payload.emoji
-                default_channel_id = self.load_default_logging_channel(guild.id)
-                if default_channel_id:
-                    default_channel = guild.get_channel(default_channel_id)
-                    if default_channel:
-                        embed = discord.Embed(
-                            title="Reaction Added",
-                            description=f"Emoji: {emoji}",
-                            color=discord.Color.green()
-                        )
-                        embed.add_field(name="User", value=user.mention, inline=False)
-                        embed.add_field(name="Message", value=message.content, inline=False)
-                        embed.add_field(name="Channel", value=channel.mention, inline=False)
-                        embed.add_field(name="Timestamp", value=datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC"),
-                                        inline=False)
-                        await default_channel.send(embed=embed)
-
-    @commands.Cog.listener()
-    async def on_raw_reaction_remove(self, payload):
-        guild = self.bot.get_guild(payload.guild_id)
-        if guild:
-            channel = guild.get_channel(payload.channel_id)
-            if channel:
-                message = await channel.fetch_message(payload.message_id)
-                if message.author.bot:  # Check if the reacted message was sent by a bot
-                    return  # Ignore reactions to messages sent by bots
-                user = guild.get_member(payload.user_id)
-                emoji = payload.emoji
-                default_channel_id = self.load_default_logging_channel(guild.id)
-                if default_channel_id:
-                    default_channel = guild.get_channel(default_channel_id)
-                    if default_channel:
-                        embed = discord.Embed(
-                            title="Reaction Removed",
-                            description=f"Emoji: {emoji}",
-                            color=discord.Color.red()
-                        )
-                        embed.add_field(name="User", value=user.mention, inline=False)
-                        embed.add_field(name="Message", value=message.content, inline=False)
-                        embed.add_field(name="Channel", value=channel.mention, inline=False)
-                        embed.add_field(name="Timestamp", value=datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC"),
-                                        inline=False)
-                        await default_channel.send(embed=embed)
-
-    @commands.Cog.listener()
     async def on_voice_state_update(self, member, before, after):
         guild = member.guild
         default_channel_id = self.load_default_logging_channel(guild.id)
