@@ -1,8 +1,8 @@
 import os
 import discord
+import requests
 from dotenv import load_dotenv
 from discord.ext import commands
-import requests
 from discord import app_commands
 
 load_dotenv()
@@ -18,22 +18,24 @@ class SheriCog(commands.Cog):
     @commands.command()
     async def endpoints(self, ctx):
         if ctx.channel.is_nsfw():
-            await ctx.send("# SFW ENDPOINTS\n\nbday, belly_rub, blep, bonk, boop, bunny, cat, cry, cuddle, deer, fox, "
-                           "goat, hold, horse, hug, husky, kiss, lick, lion, mur, nature, pat, paws, pig, plane, "
-                           "pokemon, proposal, rpanda, sfwsergal, shiba, snek, snep, tiger, turkey, turtle, wolves, "
-                           "yeen\n\n\n\n# NSFW ENDPOINTS\n\n69, anal, bang, bisexual, boob, boobwank, "
-                           "boop, booty, christmas, cumflation, cuntboy, cuntboy_bang, deer, "
-                           "dick, dick_wank, dickmilk, dickorgy, dp, fbound, fcreampie, femboypresentation, finger, "
-                           "fpresentation, frot, fseduce, fsolo, ftease, futabang, gay, gay_bang, gif, "
-                           "handjob, herm_bang, impregnated, jockstraps, lesbian, "
-                           "lesbian_bang, lick, maws, mbound, mcreampie, mpresentation, mseduce, msolo, mtease, "
-                           "nboop, nbrony, nbulge, ncomics, ncuddle, ndeer, nfelkins, nfemboy, nfox, "
-                           "nfuta, ngroup, nhold, nhug, nhusky, nkiss, nleopard, nlick, npanther, npat, npokemon, "
-                           "nprotogen, nscalies, nsfwselfies, nsolo, nspank, ntease, ntrap, pawjob, pawlick, "
-                           "paws, pegging_bang, petplay, pregnant, pussy, "
-                           "pussy_eating, ride, rimjob, rpanda, selfsuck, sfwsergal, "
-                           "straight_bang, suck, tentacles, toys, videos, vore, vorefanal, "
-                           "voreforal, vorefunbirth, voremanal, voremcock, voremoral, wolves, yiff")
+            await ctx.send(
+                "# SFW ENDPOINTS\n\nbday, belly_rub, blep, bonk, boop, bunny, cat, cry, cuddle, deer, fox, "
+                "goat, hold, horse, hug, husky, kiss, lick, lion, mur, nature, pat, paws, pig, plane, "
+                "pokemon, proposal, rpanda, sfwsergal, shiba, snek, snep, tiger, turkey, turtle, wolves, "
+                "yeen\n\n\n\n# NSFW ENDPOINTS\n\n69, anal, bang, bisexual, boob, boobwank, "
+                "boop, booty, christmas, cumflation, cuntboy, cuntboy_bang, deer, "
+                "dick, dick_wank, dickmilk, dickorgy, dp, fbound, fcreampie, femboypresentation, finger, "
+                "fpresentation, frot, fseduce, fsolo, ftease, futabang, gay, gay_bang, gif, "
+                "handjob, herm_bang, impregnated, jockstraps, lesbian, "
+                "lesbian_bang, lick, maws, mbound, mcreampie, mpresentation, mseduce, msolo, mtease, "
+                "nboop, nbrony, nbulge, ncomics, ncuddle, ndeer, nfelkins, nfemboy, nfox, "
+                "nfuta, ngroup, nhold, nhug, nhusky, nkiss, nleopard, nlick, npanther, npat, npokemon, "
+                "nprotogen, nscalies, nsfwselfies, nsolo, nspank, ntease, ntrap, pawjob, pawlick, "
+                "paws, pegging_bang, petplay, pregnant, pussy, "
+                "pussy_eating, ride, rimjob, rpanda, selfsuck, sfwsergal, "
+                "straight_bang, suck, tentacles, toys, videos, vore, vorefanal, "
+                "voreforal, vorefunbirth, voremanal, voremcock, voremoral, wolves, yiff"
+            )
 
         else:
             await ctx.send("SFW ENDPOINTS\n\nbday, belly_rub, blep, bonk, boop, bunny, cat, cry, cuddle, deer, fox, "
@@ -47,53 +49,59 @@ class SheriCog(commands.Cog):
         Pulls an image from a specified endpoint.
         """
         try:
+            # Define the list of valid endpoints for SFW and NSFW channels
+            sfw_endpoints = ["bday", "belly_rub", "blep", "bonk", "boop", "bunny", "cat", "cry", "cuddle", "deer",
+                             "fox",
+                             "goat", "hold", "horse", "hug", "husky", "kiss", "lick", "lion", "mur", "nature",
+                             "pat", "paws",
+                             "pig", "plane", "pokemon", "proposal", "rpanda", "sfwsergal", "shiba", "snek",
+                             "snep", "tiger",
+                             "turkey", "turtle", "wolves", "yeen"]
+            nsfw_endpoints = ["bday", "belly_rub", "blep", "bonk", "boop", "bunny", "cat", "cry", "cuddle",
+                              "deer", "fox",
+                              "goat", "hold", "horse", "hug", "husky", "kiss", "lick", "lion", "mur", "nature",
+                              "pat", "paws",
+                              "pig", "plane", "pokemon", "proposal", "rpanda", "sfwsergal", "shiba", "snek",
+                              "snep", "tiger",
+                              "turkey", "turtle", "wolves", "yeen", "69", "anal", "bang", "bisexual", "boob",
+                              "boobwank", "boop",
+                              "booty", "christmas", "cumflation", "cuntboy", "cuntboy_bang", "deer", "dick",
+                              "dick_wank",
+                              "dickmilk", "dickorgy", "dp", "fbound", "fcreampie", "femboypresentation", "finger",
+                              "fpresentation",
+                              "frot", "fseduce", "fsolo", "ftease", "futabang", "gay", "gay_bang", "gif",
+                              "handjob", "herm_bang",
+                              "impregnated", "jockstraps", "lesbian", "lesbian_bang", "lick", "maws", "mbound",
+                              "mcreampie", "mpresentation",
+                              "mseduce", "msolo", "mtease", "nboop", "nbrony", "nbulge", "ncomics", "ncuddle",
+                              "ndeer", "nfelkins",
+                              "nfemboy", "nfox", "nfuta", "ngroup", "nhold", "nhug", "nhusky", "nkiss",
+                              "nleopard", "nlick", "npanther",
+                              "npat", "npokemon", "nprotogen", "nscalies", "nsfwselfies", "nsolo", "nspank",
+                              "ntease", "ntrap", "pawjob",
+                              "pawlick", "paws", "pegging_bang", "petplay", "pregnant", "pussy", "pussy_eating",
+                              "ride", "rimjob", "rpanda", "selfsuck", "sfwsergal", "straight_bang", "suck",
+                              "tentacles", "toys", "videos", "vore", "voreforal", "vorefunbirth", "voremanal",
+                              "voremcock", "voremoral", "wolves", "yiff"]
+
+            all_endpoints = sfw_endpoints + nsfw_endpoints
+
             # Check if the endpoint is provided
             if endpoint is None:
-                await inter.response.send_message("Please provide a valid endpoint.")
+                await inter.response.defer()
+                options = [discord.SelectOption(label=e, value=e) for e in all_endpoints]
+                await inter.response.send_message("Please select an endpoint:", components=[discord.ActionRow(
+                    discord.Select(options=options, custom_id="endpoint_selection"))])
                 return
 
-            # Define the list of valid endpoints for SFW and NSFW channels
-            valid_endpoints_sfw = ["bday", "belly_rub", "blep", "bonk", "boop", "bunny", "cat", "cry", "cuddle", "deer",
-                                   "fox",
-                                   "goat", "hold", "horse", "hug", "husky", "kiss", "lick", "lion", "mur", "nature",
-                                   "pat", "paws",
-                                   "pig", "plane", "pokemon", "proposal", "rpanda", "sfwsergal", "shiba", "snek",
-                                   "snep", "tiger",
-                                   "turkey", "turtle", "wolves", "yeen"]
-            valid_endpoints_nsfw = ["bday", "belly_rub", "blep", "bonk", "boop", "bunny", "cat", "cry", "cuddle",
-                                    "deer", "fox",
-                                    "goat", "hold", "horse", "hug", "husky", "kiss", "lick", "lion", "mur", "nature",
-                                    "pat", "paws",
-                                    "pig", "plane", "pokemon", "proposal", "rpanda", "sfwsergal", "shiba", "snek",
-                                    "snep", "tiger",
-                                    "turkey", "turtle", "wolves", "yeen69", "anal", "bang", "bisexual", "boob",
-                                    "boobwank", "boop",
-                                    "booty", "christmas", "cumflation", "cuntboy", "cuntboy_bang", "deer", "dick",
-                                    "dick_wank",
-                                    "dickmilk", "dickorgy", "dp", "fbound", "fcreampie", "femboypresentation", "finger",
-                                    "fpresentation",
-                                    "frot", "fseduce", "fsolo", "ftease", "futabang", "gay", "gay_bang", "gif",
-                                    "handjob", "herm_bang",
-                                    "impregnated", "jockstraps", "lesbian", "lesbian_bang", "lick", "maws", "mbound",
-                                    "mcreampie", "mpresentation",
-                                    "mseduce", "msolo", "mtease", "nboop", "nbrony", "nbulge", "ncomics", "ncuddle",
-                                    "ndeer", "nfelkins",
-                                    "nfemboy", "nfox", "nfuta", "ngroup", "nhold", "nhug", "nhusky", "nkiss",
-                                    "nleopard", "nlick", "npanther",
-                                    "npat", "npokemon", "nprotogen", "nscalies", "nsfwselfies", "nsolo", "nspank",
-                                    "ntease", "ntrap", "pawjob",
-                                    "pawlick", "paws", "pegging_bang", "petplay", "pregnant", "pussy", "pussy_eating",
-                                    "ride", "rimjob", "rpanda",
-                                    "selfsuck", "sfwsergal", "straight_bang", "suck", "tentacles", "toys", "videos",
-                                    "vore", "vorefanal", "voreforal",
-                                    "vorefunbirth", "voremanal", "voremcock", "voremoral", "wolves", "yiff"]
+            if endpoint not in all_endpoints:
+                await inter.response.send_message("Invalid endpoint, please run `?endpoints` to see all available "
+                                                  "endpoints.")
+                return
 
-            # Determine the list of valid endpoints based on whether the channel is NSFW or not
-            valid_endpoints = valid_endpoints_nsfw if inter.channel.is_nsfw() else valid_endpoints_sfw
-
-            # Check if the provided endpoint is valid
-            if endpoint not in valid_endpoints:
-                await inter.response.send_message("Please provide a valid endpoint.")
+            # Check if the endpoint is NSFW and if NSFW content is allowed in the channel
+            if endpoint in nsfw_endpoints and not inter.channel.is_nsfw():
+                await inter.response.send_message("This endpoint is NSFW and can only be used in NSFW channels.")
                 return
 
             # Proceed with fetching the image using the provided endpoint...

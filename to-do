@@ -3,14 +3,14 @@ domain blacklisting
 tickets?
 levels?
 mass delete message command
-sheri api integration - in progress
+MOSTLY IMPLEMENTED - sheri api integration
 games
 messageroles
 `/setnick` command
 sticky messages
 starboard
 muterole
-`/echo`
+ADDED - `/echo`
 fix messages falsely sending edited logs in announcement channels
 HIGH PRIORITY - make the ?load command reload the cogs rather than than load them again
 HIGH PRIORITY - make a moderation logging system
