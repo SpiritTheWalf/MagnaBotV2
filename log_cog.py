@@ -63,7 +63,7 @@ class LoggingCog(commands.Cog):
                     title=f"Member {action}",
                     color=discord.Color.green() if action == 'joined' else discord.Color.red()
                 )
-                embed.set_thumbnail(url=member.avatar.url)
+                embed.set_author(name=member.display_name, icon_url=member.avatar.url)
                 embed.add_field(name="User", value=member.mention, inline=False)
                 embed.add_field(name="User ID", value=member.id, inline=False)
                 if action == 'joined':

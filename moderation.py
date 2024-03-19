@@ -158,7 +158,8 @@ class ModerationCog(commands.Cog):
         await channel.send(embed=ban_embed)
 
     @app_commands.command(name="ban", description="Ban a user from the server")
-    async def ban_command(self, inter: discord.Interaction, user: discord.Member, reason: str = "No reason provided"):
+    async def ban_command(self, inter: discord.Interaction, user_id: str = None, username: str = None,
+                          reason: str = "No reason provided"):
         issuer = inter.user
         guild = inter.guild
 
@@ -166,6 +167,29 @@ class ModerationCog(commands.Cog):
         if not issuer.guild_permissions.ban_members and not issuer.guild_permissions.administrator:
             await inter.response.send_message("You don't have permission to use this command.")
             return
+
+        # Ensure only one of user_id or username is provided
+        if (user_id is None and username is None) or (user_id is not None and username is not None):
+            await inter.response.send_message("Please provide either a user ID or a username, not both.")
+            return
+
+        # Convert user_id from string to integer if it's a numeric string
+        if user_id is not None and user_id.isdigit():
+            user_id = int(user_id)
+
+        # Fetch the member object using user ID or username
+        user = None
+        if user_id is not None:
+            try:
+                user = await self.bot.fetch_user(user_id)
+            except discord.NotFound:
+                await inter.response.send_message("User not found.")
+                return
+        elif username is not None:
+            user = discord.utils.get(guild.members, name=username)
+            if user is None:
+                await inter.response.send_message("User not found.")
+                return
 
         # Send DM to the user
         try:
@@ -182,7 +206,7 @@ class ModerationCog(commands.Cog):
 
         # Ban the user
         try:
-            await user.ban(reason=reason)
+            await guild.ban(user, reason=reason)
         except discord.Forbidden:
             await inter.response.send_message("I don't have permission to ban that user.")
             return
@@ -214,13 +238,27 @@ class ModerationCog(commands.Cog):
         await channel.send(embed=unban_embed)
 
     @app_commands.command(name="unban", description="Unban a user from the server")
-    async def unban_command(self, inter: discord.Interaction, user: discord.User, reason: str = "No reason provided"):
+    async def unban_command(self, inter: discord.Interaction, user_id: str, reason: str = "No reason provided"):
         issuer = inter.user
         guild = inter.guild
 
         # Check if the issuer has the "Ban Members" permission or is an administrator
         if not issuer.guild_permissions.ban_members and not issuer.guild_permissions.administrator:
             await inter.response.send_message("You don't have permission to use this command.")
+            return
+
+        # Convert user_id to integer
+        try:
+            user_id = int(user_id)
+        except ValueError:
+            await inter.response.send_message("Invalid user ID provided.")
+            return
+
+        # Convert user_id to discord.User object
+        try:
+            user = await self.bot.fetch_user(user_id)
+        except discord.NotFound:
+            await inter.response.send_message("User not found.")
             return
 
         # Unban the user
