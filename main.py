@@ -5,6 +5,7 @@ import moderation
 import sheri
 import slashcommands
 import spiritonly
+
 from discord.ext import commands
 from dotenv import load_dotenv
 
@@ -31,6 +32,7 @@ async def load_cogs(bot):
                 print(f"Failed to load cog {cog.__name__}: {e}")
     print("Cogs loaded!")
 
+
 # Bot ready event
 @bot.event
 async def on_ready():
@@ -44,6 +46,20 @@ async def on_ready():
         name=f"{members} members"
     ))
     print("Bot ready!")
+
+    # Set the bot's presence
+    await bot.change_presence(activity=discord.Activity(
+        type=discord.ActivityType.watching,
+        name=f'{members} members'
+    ))
+    print('Ready!')
+
+
+@bot.command()
+async def load(ctx):
+    print('Load command executed!')
+    await load_cogs()
+    await ctx.send('Cogs loaded!')
 
 
 # Command to set bot's presence, can only be done by SpiritTheWalf, or whoever is running the bot

@@ -16,6 +16,11 @@ class SheriCog(commands.Cog):
         self.api_key = API_KEY  # Replace this with your actual API key
 
     @commands.command()
+    async def list_cogs(self, ctx):
+        loaded_cogs = '\n'.join(self.bot.cogs.keys())
+        await ctx.send(f"Loaded cogs: \n{loaded_cogs}")
+
+    @commands.command()
     async def endpoints(self, ctx):
         if ctx.channel.is_nsfw():
             await ctx.send(

@@ -3,6 +3,7 @@ from datetime import datetime
 from pytz import all_timezones, timezone
 from discord.ext import commands
 from discord import app_commands
+from discord.app_commands import Command as AppCommand
 
 intents = discord.Intents.default()
 intents.members = True
@@ -24,21 +25,28 @@ class SlashCog(commands.Cog):
         await inter.response.send_message("The main support server:https://discord.gg/bYEYvA7R3G\n The beta support "
                                           "server:https://discord.com/invite/shgUJqmJhW")
 
-    @app_commands.command(name="list_commands", description="List all commands for the bot")
-    async def list_commands(self, inter: discord.Interaction):
-        normal_commands = [command.name for command in self.bot.commands]
-        slash_commands = []
+    #@AppCommand(name="list_commands", description="List all commands for the bot")
+    #async def list_commands(self, inter: discord.Interaction):
+        #normal_commands = [command.name for command in self.bot.commands]
+        #app_commands = []
 
-        # Iterate over attributes of the class to find slash commands
-        for attr_name in dir(self):
-            attr = getattr(self, attr_name)
-            if isinstance(attr, app_commands.Command):
-                slash_commands.append(attr.name)
+        # Iterate over all cogs in the bot
+       # for cog_name, cog in self.bot.cogs.items():
+            #print(f"Checking commands in cog: {cog_name}")
+            ## Check if the cog has app_commands commands
+            #if hasattr(cog, "get_commands"):
+               # for command in cog.get_commands():
+                    #print(f"Checking command: {command.name}")
+                    #if isinstance(command, AppCommand):  # Correct usage of AppCommand
+                      #  print(f"Found app command: {cog_name}: {command.name}")
+                       # app_commands.append(f"{cog_name}: {command.name}")
+                   # else:
+                       # print(f"Command {command.name} in cog {cog_name} is not recognized as an app command.")
 
-        response = f"**Normal Commands:**\n{', '.join(normal_commands)}\n\n"
-        response += f"**Slash Commands:**\n{', '.join(slash_commands)}"
+       # response = f"**Normal Commands:**\n{', '.join(normal_commands)}\n\n"
+       # response += f"**App Commands:**\n{', '.join(app_commands)}"
 
-        await inter.response.send_message(content=response)
+       # await inter.response.send_message(content=response)
 
     @app_commands.command(name="timenow", description="What is the time in a particular time zone?")
     async def timenow(self, inter: discord.Interaction, timezone_name: str, ):
