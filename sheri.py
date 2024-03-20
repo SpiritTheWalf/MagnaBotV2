@@ -107,7 +107,7 @@ class SheriCog(commands.Cog):
             api_url = f"https://sheri.bot/api/{endpoint}"
             headers = {
                 "Authorization": f"Token {self.api_key}",
-                "User-Agent": "MagnaBot/1.0 (Python Requests)"
+                "User-Agent": "MagnaBot/2.0 (Python Requests)"
             }
             response = requests.get(api_url, headers=headers)
 
