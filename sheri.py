@@ -62,21 +62,15 @@ class SheriCog(commands.Cog):
                              "pig", "plane", "pokemon", "proposal", "rpanda", "sfwsergal", "shiba", "snek",
                              "snep", "tiger",
                              "turkey", "turtle", "wolves", "yeen"]
-            nsfw_endpoints = ["bday", "belly_rub", "blep", "bonk", "boop", "bunny", "cat", "cry", "cuddle",
-                              "deer", "fox",
-                              "goat", "hold", "horse", "hug", "husky", "kiss", "lick", "lion", "mur", "nature",
-                              "pat", "paws",
-                              "pig", "plane", "pokemon", "proposal", "rpanda", "sfwsergal", "shiba", "snek",
-                              "snep", "tiger",
-                              "turkey", "turtle", "wolves", "yeen", "69", "anal", "bang", "bisexual", "boob",
-                              "boobwank", "boop",
-                              "booty", "christmas", "cumflation", "cuntboy", "cuntboy_bang", "deer", "dick",
+            nsfw_endpoints = ["69", "anal", "bang", "bisexual", "boob",
+                              "boobwank",
+                              "booty", "christmas", "cumflation", "cuntboy", "cuntboy_bang","dick",
                               "dick_wank",
                               "dickmilk", "dickorgy", "dp", "fbound", "fcreampie", "femboypresentation", "finger",
                               "fpresentation",
                               "frot", "fseduce", "fsolo", "ftease", "futabang", "gay", "gay_bang", "gif",
                               "handjob", "herm_bang",
-                              "impregnated", "jockstraps", "lesbian", "lesbian_bang", "lick", "maws", "mbound",
+                              "impregnated", "jockstraps", "lesbian", "lesbian_bang", "maws", "mbound",
                               "mcreampie", "mpresentation",
                               "mseduce", "msolo", "mtease", "nboop", "nbrony", "nbulge", "ncomics", "ncuddle",
                               "ndeer", "nfelkins",
@@ -85,9 +79,9 @@ class SheriCog(commands.Cog):
                               "npat", "npokemon", "nprotogen", "nscalies", "nsfwselfies", "nsolo", "nspank",
                               "ntease", "ntrap", "pawjob",
                               "pawlick", "paws", "pegging_bang", "petplay", "pregnant", "pussy", "pussy_eating",
-                              "ride", "rimjob", "rpanda", "selfsuck", "sfwsergal", "straight_bang", "suck",
+                              "ride", "rimjob", "rpanda", "selfsuck", "straight_bang", "suck",
                               "tentacles", "toys", "videos", "vore", "voreforal", "vorefunbirth", "voremanal",
-                              "voremcock", "voremoral", "wolves", "yiff"]
+                              "voremcock", "voremoral", "yiff"]
 
             all_endpoints = sfw_endpoints + nsfw_endpoints
 
