@@ -26,7 +26,7 @@ class SheriCog(commands.Cog):
             await ctx.send(
                 "# SFW ENDPOINTS\n\nbday, belly_rub, blep, bonk, boop, bunny, cat, cry, cuddle, deer, fox, "
                 "goat, hold, horse, hug, husky, kiss, lick, lion, mur, nature, pat, paws, pig, plane, "
-                "pokemon, proposal, rpanda, sfwsergal, shiba, snek, snep, tiger, turkey, turtle, wolves, "
+                "pokemon, proposal, sfwsergal, shiba, snek, snep, tiger, turkey, turtle, wolves, "
                 "yeen\n\n\n\n# NSFW ENDPOINTS\n\n69, anal, bang, bisexual, boob, boobwank, "
                 "boop, booty, christmas, cumflation, cuntboy, cuntboy_bang, deer, "
                 "dick, dick_wank, dickmilk, dickorgy, dp, fbound, fcreampie, femboypresentation, finger, "
@@ -107,7 +107,7 @@ class SheriCog(commands.Cog):
             api_url = f"https://sheri.bot/api/{endpoint}"
             headers = {
                 "Authorization": f"Token {self.api_key}",
-                "User-Agent": "MagnaBot/2.0 (Python Requests)"
+                "User-Agent": "MagnaBot/1.0 (Python Requests)"
             }
             response = requests.get(api_url, headers=headers)
 
