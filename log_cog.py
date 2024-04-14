@@ -10,19 +10,18 @@ DATABASE_FILE = "logging_cog.db"
 class LoggingCog(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-
-    def get_connection(self):
-        return sqlite3.connect(DATABASE_FILE)
+        self.conn = sqlite3.connect(DATABASE_FILE)
+        self.cursor = self.conn.cursor()
 
     def load_default_logging_channel(self, guild_id):
-        with self.get_connection() as conn:
+        with self.conn as conn:
             cursor = conn.cursor()
             cursor.execute("SELECT default_logging_channel FROM guilds WHERE guild_id = ?", (guild_id,))
             result = cursor.fetchone()
             return result[0] if result else None
 
     def save_default_logging_channel(self, guild_id, channel_id):
-        with self.get_connection() as conn:
+        with self.conn as conn:
             cursor = conn.cursor()
             cursor.execute("REPLACE INTO guilds (guild_id, default_logging_channel) VALUES(?, ?)",
                            (guild_id, channel_id))
@@ -54,37 +53,33 @@ class LoggingCog(commands.Cog):
         self.save_default_logging_channel(guild.id, channel.id)
         await inter.response.send_message(f"Default logging channel set to {channel.mention}", ephemeral=True)
 
-    async def send_join_leave_logging_embed(self, guild, action, member, reason=None):
-        channel_id = self.load_default_logging_channel(guild.id)
-        if channel_id:
+    async def send_join_leave_logging_embed(self, guild, action, member, reason):
+        guild_id = guild.id
+        query = "SELECT default_logging_channel FROM guilds WHERE guild_id = ?"
+        self.cursor.execute(query, (guild_id,))
+        result = self.cursor.fetchone()
+        if result:
+            channel_id = result[0]
             channel = guild.get_channel(channel_id)
             if channel:
                 embed = discord.Embed(
                     title=f"Member {action}",
-                    color=discord.Color.green() if action == 'joined' else discord.Color.red()
+                    color=discord.Color.green() if action == "joined" else discord.Color.red()
                 )
-            if member.avatar:
-                embed.set_author(name=member.display_name, icon_url=member.avatar.url)
-            else:
-                embed.set_author(name=member.display_name)
+                if member.avatar:
+                    embed.set_author(name=member.display_name, icon_url=member.avatar.url)
+                else:
+                    embed.set_author(name=member.display_name)
+
                 embed.add_field(name="User", value=member.mention, inline=False)
                 embed.add_field(name="User ID", value=member.id, inline=False)
-                if action == 'joined':
-                    invites = await guild.invites()
-                    invite_used = None
-                    for invite in invites:
-                        if invite.uses < invite.max_uses or invite.max_uses == 0:
-                            invite_used = invite
-                            break
-                    invite_link = f"Used Invite: {invite_used.url}" if invite_used else "Unknown"
-                    embed.add_field(name="Join Link", value=invite_link, inline=False)
-                    embed.add_field(name="Account Creation Date",
-                                    value=member.created_at.strftime("%Y-%m-%d %H:%M:%S UTC"), inline=False)
-                    embed.add_field(name="Timestamp", value=datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC"),
-                                    inline=False)
-                if reason:
-                    embed.add_field(name="Reason", value=reason.capitalize(), inline=False)
-                await channel.send(embed=embed)
+                embed.add_field(name="Account creation date", value=member.created_at.strftime("%Y-%m-%d %H:%M:%S UTC"),
+                                inline=False)
+                embed.add_field(name="Timestamp", value=datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC"),
+                                inline=False)
+            if reason:
+                embed.add_field(name="Reason", value=reason.capitalize(), inline=False)
+            await channel.send(embed=embed)
 
     @commands.Cog.listener()
     async def on_message_edit(self, before, after):
@@ -107,6 +102,12 @@ class LoggingCog(commands.Cog):
                 await channel.send(embed=embed)
 
     @commands.Cog.listener()
+    async def on_member_join(self, member):
+        guild = member.guild
+        await self.send_join_leave_logging_embed(guild, "joined", member, reason=None)
+        print(f"{member} joined a server")
+
+    @commands.Cog.listener()
     async def on_member_remove(self, member):
         guild = member.guild
         reason = None
@@ -115,15 +116,11 @@ class LoggingCog(commands.Cog):
 
         async for entry in guild.audit_logs(action=discord.AuditLogAction.kick):
             if entry.target == member and entry.created_at > cutoff_time:
-                reason = "kicked"
+                reason = "Kicked"
                 break
 
         await self.send_join_leave_logging_embed(guild, "left", member, reason)
-
-    @commands.Cog.listener()
-    async def on_member_join(self, member):
-        guild = member.guild
-        await self.send_join_leave_logging_embed(guild, "joined", member)
+        print(f"{member} left a server")
 
     @commands.Cog.listener()
     async def on_voice_state_update(self, member, before, after):
